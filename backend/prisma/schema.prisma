@@ -1,0 +1,112 @@
+// prisma/schema.prisma
+// SalesTrack — MySQL schema with full DateTime columns on every model
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  passwordHash String    @map("password_hash")
+  displayName  String    @map("display_name")
+  role         String    @default("cashier")       /// "admin" | "cashier"
+  createdAt    DateTime  @default(now())  @map("created_at")  @db.DateTime(0)
+  updatedAt    DateTime  @updatedAt       @map("updated_at")  @db.DateTime(0)
+  lastLogin    DateTime? @map("last_login")                   @db.DateTime(0)
+
+  transactions   Transaction[]
+  stockMovements StockMovement[]
+
+  @@map("users")
+}
+
+model Product {
+  id                Int      @id @default(autoincrement())
+  name              String
+  price             Float
+  category          String?
+  sku               String?
+  trackStock        Boolean  @default(false) @map("track_stock")
+  stockQuantity     Int      @default(0)     @map("stock_quantity")
+  lowStockThreshold Int      @default(5)     @map("low_stock_threshold")
+  createdAt         DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime @updatedAt      @map("updated_at") @db.DateTime(0)
+
+  transactionItems TransactionItem[]
+  stockMovements   StockMovement[]
+  discount         ProductDiscount?
+
+  @@map("products")
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  userId          Int?     @map("user_id")
+  cashierName     String?  @map("cashier_name")
+  isDelivery        Boolean  @default(false) @map("is_delivery")
+  deliveryRecipient String?  @map("delivery_recipient")  /// store/customer name
+  deliveryNote      String?  @map("delivery_note")       /// free-text note
+  createdAt         DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  user  User?             @relation(fields: [userId], references: [id])
+  items TransactionItem[]
+
+  @@map("transactions")
+}
+
+model ProductDiscount {
+  id               Int      @id @default(autoincrement())
+  productId        Int      @unique @map("product_id")
+  minQuantity      Int      @map("min_quantity")      /// trigger qty for bundle price
+  discountedPrice  Float    @map("discounted_price")  /// bundle total price
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt        DateTime @updatedAt      @map("updated_at") @db.DateTime(0)
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("product_discounts")
+}
+
+model TransactionItem {
+  id             Int     @id @default(autoincrement())
+  transactionId  Int     @map("transaction_id")
+  productId      Int     @map("product_id")
+  productName    String  @map("product_name")
+  quantity       Int
+  unitPrice      Float   @map("unit_price")
+  totalPrice     Float   @map("total_price")
+  originalTotal  Float   @default(0) @map("original_total")  /// qty × unitPrice before discount
+  discountAmount Float   @default(0) @map("discount_amount")  /// originalTotal - totalPrice
+  isDiscounted   Boolean @default(false) @map("is_discounted")
+  createdAt      DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  product     Product     @relation(fields: [productId], references: [id])
+
+  @@map("transaction_items")
+}
+
+model StockMovement {
+  id             Int      @id @default(autoincrement())
+  productId      Int      @map("product_id")
+  productName    String   @map("product_name")
+  movementType   String   @map("movement_type") /// "sale" | "restock" | "adjust"
+  quantityChange Int      @map("quantity_change")
+  stockAfter     Int      @map("stock_after")
+  note           String?
+  transactionId  Int?     @map("transaction_id")
+  userId         Int?     @map("user_id")
+  createdAt      DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
+
+  @@map("stock_movements")
+}

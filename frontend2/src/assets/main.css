@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ── */
+@layer base {
+  :root {
+    /* Light mode */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
+    --surface:    0 0% 98%;
+    --surface-2:  0 0% 94%;
+    --border:     0 0% 88%;
+    --border-2:   0 0% 78%;
+    --muted:      0 0% 96%;
+    --muted-fg:   0 0% 45%;
+    --primary:    0 0% 9%;
+    --primary-fg: 0 0% 100%;
+  }
+
+  .dark {
+    /* Dark mode */
+    --background: 0 0% 6%;
+    --foreground: 0 0% 95%;
+    --surface:    0 0% 10%;
+    --surface-2:  0 0% 14%;
+    --border:     0 0% 18%;
+    --border-2:   0 0% 26%;
+    --muted:      0 0% 12%;
+    --muted-fg:   0 0% 52%;
+    --primary:    0 0% 95%;
+    --primary-fg: 0 0% 7%;
+  }
+
+  * { @apply box-border; }
+
+  html { @apply antialiased; }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'DM Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Use tabular nums from DM Sans — no slashed zero */
+  .font-mono {
+    font-family: 'DM Sans', sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--border-2)); border-radius: 99px; }
+}
+
+/* ── Component classes ── */
+@layer components {
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-medium rounded-md
+           transition-all duration-150 cursor-pointer border outline-none
+           disabled:opacity-40 disabled:cursor-not-allowed select-none;
+  }
+  .btn-primary {
+    @apply btn px-4 py-2
+           bg-[hsl(var(--primary))] text-[hsl(var(--primary-fg))]
+           border-[hsl(var(--primary))]
+           hover:opacity-90 active:opacity-80;
+  }
+  .btn-secondary {
+    @apply btn px-4 py-2
+           bg-[hsl(var(--surface))] text-[hsl(var(--foreground))]
+           border-[hsl(var(--border))]
+           hover:bg-[hsl(var(--surface-2))] hover:border-[hsl(var(--border-2))];
+  }
+  .btn-ghost {
+    @apply btn px-4 py-2
+           bg-transparent text-[hsl(var(--foreground))]
+           border-transparent
+           hover:bg-[hsl(var(--muted))];
+  }
+  .btn-danger {
+    @apply btn px-4 py-2
+           bg-danger/10 text-danger
+           border-danger/30
+           hover:bg-danger/20;
+  }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-5 py-2.5 text-base; }
+
+  /* Card */
+  .card {
+    @apply bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-lg;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full text-sm rounded-md px-3 py-2
+           bg-[hsl(var(--background))] text-[hsl(var(--foreground))]
+           border border-[hsl(var(--border))]
+           placeholder:text-[hsl(var(--muted-fg))]
+           outline-none ring-0
+           transition-colors
+           focus:border-[hsl(var(--border-2))] focus:ring-1 focus:ring-[hsl(var(--border-2))];
+  }
+
+  /* Label */
+  .label {
+    @apply block text-xs font-medium text-[hsl(var(--muted-fg))] mb-1.5;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+  .badge-success { @apply badge bg-success/10 text-success; }
+  .badge-danger  { @apply badge bg-danger/10  text-danger;  }
+  .badge-warning { @apply badge bg-warning/10 text-warning; }
+  .badge-info    { @apply badge bg-info/10    text-info;    }
+  .badge-neutral { @apply badge bg-[hsl(var(--surface-2))] text-[hsl(var(--muted-fg))]; }
+
+  /* Separator */
+  .separator {
+    @apply border-t border-[hsl(var(--border))];
+  }
+}
