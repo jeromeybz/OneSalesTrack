@@ -33,7 +33,7 @@ export async function authenticate(req, res, next) {
 /**
  * Role guard — call after `authenticate`.
  * Usage: router.delete('/users/:id', authenticate, requireRole('admin'), handler)
- */
+ */ 
 export function requireRole(...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user?.role)) {

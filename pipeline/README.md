@@ -31,3 +31,18 @@ This folder contains a simple monthly pipeline that:
 ## Test mode (single day)
 
 Set `PIPELINE_TEST_DATE=YYYY-MM-DD` in `pipeline/.env`. This forces extraction for that day only and stores data under that month/year.
+
+## Tests
+
+- Install dev deps:
+  - `pip install -r pipeline\\requirements-dev.txt`
+- Run unit tests:
+  - PowerShell: `pipeline\\scripts\\run_tests.ps1`
+  - Bash: `pipeline/scripts/run_tests.sh`
+  - Output: prints one line per test, including the duration
+- CI-friendly (installs deps then runs tests):
+  - PowerShell: `pipeline\\scripts\\run_tests.ps1 -Install`
+  - Bash: `INSTALL=1 pipeline/scripts/run_tests.sh`
+  - If your runner only has `python3`: `PYTHON=python3 pipeline/scripts/run_tests.sh`
+  - If `pip` is missing on Linux: install `python3-pip` (Debian/Ubuntu) or run `python3 -m ensurepip --upgrade` if available
+  - If you hit `externally-managed-environment` (PEP 668): the bash script installs into `pipeline/.venv` automatically; ensure `python3-venv` is available
